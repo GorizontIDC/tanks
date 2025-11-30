@@ -8,7 +8,7 @@ let mx = 0;
 let my = 0;
 
 const tankImage = new Image();
-tankImage.src = '/images/IS.png'; // Хороший танк
+tankImage.src = 'https://github.com/GorizontIDC/tanks/blob/main/images/IS.png'; // Хороший танк
 
 const bulletImage = new Image();
 bulletImage.src = '/images/shaurma.jpg'; // пули
