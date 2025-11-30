@@ -8,22 +8,22 @@ let mx = 0;
 let my = 0;
 
 const tankImage = new Image();
-tankImage.src = '/1103/WAR_THUNDER/images/IS.png'; // Хороший танк
+tankImage.src = '/images/IS.png'; // Хороший танк
 
 const bulletImage = new Image();
-bulletImage.src = '/1103/WAR_THUNDER/images/shaurma.jpg'; // пули
+bulletImage.src = '/images/shaurma.jpg'; // пули
 
 const bloodImage = new Image();
-bloodImage.src = '/1103/WAR_THUNDER/images/blood.gif'; // смерть
+bloodImage.src = '/images/blood.gif'; // смерть
 
 const explosionImage = new Image();
-explosionImage.src = '/1103/WAR_THUNDER/images/explosion.gif'; // взрыв
+explosionImage.src = '/images/explosion.gif'; // взрыв
 
 const enemyTankImage = new Image();
-enemyTankImage.src = '/1103/WAR_THUNDER/images/army.jpg'; // враг
+enemyTankImage.src = '/images/army.jpg'; // враг
 
 const enemyTankImage2 = new Image();
-enemyTankImage2.src = '/1103/WAR_THUNDER/images/TigerH1.png'; // враг 2
+enemyTankImage2.src = '/images/TigerH1.png'; // враг 2
 
 const tank = {
     width: 65,
