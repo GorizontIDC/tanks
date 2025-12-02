@@ -8,22 +8,22 @@ let mx = 0;
 let my = 0;
 
 const tankImage = new Image();
-tankImage.src = 'IS.png';
+tankImage.src = './photo/IS.png';
 
 const bulletImage = new Image();
-bulletImage.src = 'bullet.png';
+bulletImage.src = './photo/bullet.png';
 
 const bloodImage = new Image();
-bloodImage.src = 'blood.gif';
+bloodImage.src = './photo/blood.gif';
 
 const explosionImage = new Image();
-explosionImage.src = 'explosion.gif';
+explosionImage.src = './photo/explosion.gif';
 
 const enemyTankImage = new Image();
-enemyTankImage.src = 'army.jpg';
+enemyTankImage.src = './photo/army.jpg';
 
 const enemyTankImage2 = new Image();
-enemyTankImage2.src = 'TigerH1.png';
+enemyTankImage2.src = './photo/TigerH1.png';
 
 const tank = {
     x: 400, 
