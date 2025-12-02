@@ -204,6 +204,40 @@ function keyUpHandler(event) {
         my = 0;
     }
 }
+function checkCollision() {
+     if (x < enemyTank.x + enemyTank.width && x + 50 > enemyTank.x && y < enemyTank.y + enemyTank.height && y + 50 > enemyTank.y || x < enemyTank2.x + enemyTank2.width && x + 50 > enemyTank2.x && y < enemyTank2.y + enemyTank2.height && y + 50 > enemyTank2.y) { + enemyHeight && y + 50 > enemyY) {
+        stopGame();
+    }
+}
+}
+// Остановка игры при столкновении
+function stopGame() {
+    dx = 0;
+    dy = 0;
+    enemyDx = 0;
+}
+
+// Запуск анимации
+function animate() {
+    requestAnimationFrame(animate);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawSquare();
+    drawEnemy();
+    checkCollision();
+
+    x += dx;
+    y += dy;
+
+    // Обновление позиции врага
+    enemyX += enemyDx;
+    if ((enemyTank + enemyTank.width > canvas.width || enemyTank.x < 0) ||(enemyTank2 + enemyTank2.width > canvas.width || enemyTank2.X < 0)) { {
+        enemyTank.Dx = -enemyTank.Dx;
+        enemyTank2.Dx = -enemyTank2.Dx;
+    }
+}
+}
+
+
 document.addEventListener('keydown', keyDownHandler);
 document.addEventListener('keyup', keyUpHandler);
 function update() {
@@ -229,6 +263,7 @@ function update() {
     drawBlood();
     drawEXP();
     requestAnimationFrame(update);
+    animate();
 }
 
 
