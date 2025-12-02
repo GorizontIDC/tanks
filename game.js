@@ -8,26 +8,26 @@ let mx = 0;
 let my = 0;
 
 const tankImage = new Image();
-tankImage.src = 'photo/IS.png';
+tankImage.src = 'IS.png';
 
 const bulletImage = new Image();
-bulletImage.src = 'photo/bullet.png';
+bulletImage.src = 'bullet.png';
 
 const bloodImage = new Image();
-bloodImage.src = 'photo/blood.gif';
+bloodImage.src = 'blood.gif';
 
 const explosionImage = new Image();
-explosionImage.src = 'photo/explosion.gif';
+explosionImage.src = 'explosion.gif';
 
 const enemyTankImage = new Image();
-enemyTankImage.src = 'photo/army.jpg';
+enemyTankImage.src = 'army.jpg';
 
 const enemyTankImage2 = new Image();
-enemyTankImage2.src = 'photo/TigerH1.png';
+enemyTankImage2.src = 'TigerH1.png';
 
 const tank = {
-    x: 400, // ДОБАВЬТЕ ЭТО
-    y: 500, // ДОБАВЬТЕ ЭТО
+    x: 400, 
+    y: 500, 
     width: 65,
     height: 65,
     lives: 10
@@ -83,15 +83,13 @@ document.addEventListener('click', (event) => {
     shootBullet(targetX, targetY);
 });
 
-// УНИВЕРСАЛЬНАЯ функция проверки столкновений
+// Столкновение
 function checkCollisionBetween(obj1, obj2) {
     return obj1.x < obj2.x + obj2.width &&
            obj1.x + obj1.width > obj2.x &&
            obj1.y < obj2.y + obj2.height &&
            obj1.y + obj1.height > obj2.y;
 }
-
-// УДАЛИТЕ ВТОРУЮ ФУНКЦИЮ checkCollision() в конце файла!
 
 function showGameOver() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -136,19 +134,15 @@ function updateBullets() {
 }
 
 function drawTank() {
-    // Обновляем координаты
+    // Обнов.корд
     x += mx;
     y += my;
-    
-    // Ограничиваем движение
+    // Ограничение движения
     x = Math.max(0, Math.min(canvas.width - tank.width, x));
     y = Math.max(0, Math.min(canvas.height - tank.height, y));
-    
     // Обновляем координаты в объекте tank
     tank.x = x;
     tank.y = y;
-    
-    // Рисуем
     ctx.drawImage(tankImage, x, y, tank.width, tank.height);
     ctx.font = '16px Arial';
     ctx.fillStyle = 'green';
@@ -252,15 +246,6 @@ function keyUpHandler(event) {
     else if (keyName === "w" || keyName === "W" || keyName === 'ц' || keyName === 'Ц') my = 0;
     else if (keyName === "s" || keyName === "S" || keyName === 'ы' || keyName === 'Ы') my = 0;
 }
-
-// УДАЛИТЕ всё отсюда до конца:
-// function checkCollision() {
-//     if (x < enemyTank.x + enemyTank.width && x + 50 > enemyTank.x && y < enemyTank.y + enemyTank.height && y + 50 > enemyTank.y || x < enemyTank2.x + enemyTank2.width && x + 50 > enemyTank2.x && y < enemyTank2.y + enemyTank2.height && y + 50 > enemyTank2.y) { + enemyHeight && y + 50 > enemyY;} {
-//         stopGame();
-//     }
-// }
-// function stopGame() { ... }
-// function animate() { ... }
 
 function checkPlayerCollision() {
     if (enemyTank.alive && checkCollisionBetween(tank, enemyTank)) {
