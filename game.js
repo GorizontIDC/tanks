@@ -8,28 +8,32 @@ let mx = 0;
 let my = 0;
 
 const tankImage = new Image();
-tankImage.src = 'photo/IS.png'; // Хороший танк
+tankImage.src = 'photo/IS.png';
 
 const bulletImage = new Image();
-bulletImage.src = 'photo/bullet.png'; // пули
+bulletImage.src = 'photo/bullet.png';
 
 const bloodImage = new Image();
-bloodImage.src = 'photo/blood.gif'; // смерть
+bloodImage.src = 'photo/blood.gif';
 
 const explosionImage = new Image();
-explosionImage.src = 'photo/explosion.gif'; // взрыв
+explosionImage.src = 'photo/explosion.gif';
 
 const enemyTankImage = new Image();
-enemyTankImage.src = 'photo/army.jpg'; // враг
+enemyTankImage.src = 'photo/army.jpg';
 
 const enemyTankImage2 = new Image();
-enemyTankImage2.src = 'photo/TigerH1.png'; // враг 2
+enemyTankImage2.src = 'photo/TigerH1.png';
 
 const tank = {
+    x: 400, // ДОБАВЬТЕ ЭТО
+    y: 500, // ДОБАВЬТЕ ЭТО
     width: 65,
     height: 65,
     lives: 10
 };
+
+let gameOver = false;
 
 const bullets = [];
 let blood = null;
@@ -45,24 +49,67 @@ const enemyTank = {
     moveSpeed: 5,
     direction: 1 
 };
+
 const enemyTank2 = {
     x: 400,
     y: 200,
     width: 50,
     height: 50,
     lives: 20,
-    alive:true,
+    alive: true,
     moveSpeed: 3,
     direction: 1
 };
 
-document.addEventListener('click', (event) => {
-    shootBullet(event.clientX, event.clientY);
+// Загрузка изображений
+let imagesLoaded = 0;
+const images = [tankImage, bulletImage, bloodImage, explosionImage, enemyTankImage, enemyTankImage2];
+
+images.forEach(img => {
+    img.onload = () => {
+        imagesLoaded++;
+        console.log(`Загружено: ${img.src}`);
+    };
+    img.onerror = () => {
+        console.error(`Ошибка: ${img.src}`);
+    };
 });
 
+document.addEventListener('click', (event) => {
+    if (gameOver) return;
+    const rect = canvas.getBoundingClientRect();
+    const targetX = event.clientX - rect.left;
+    const targetY = event.clientY - rect.top;
+    shootBullet(targetX, targetY);
+});
+
+// УНИВЕРСАЛЬНАЯ функция проверки столкновений
+function checkCollisionBetween(obj1, obj2) {
+    return obj1.x < obj2.x + obj2.width &&
+           obj1.x + obj1.width > obj2.x &&
+           obj1.y < obj2.y + obj2.height &&
+           obj1.y + obj1.height > obj2.y;
+}
+
+// УДАЛИТЕ ВТОРУЮ ФУНКЦИЮ checkCollision() в конце файла!
+
+function showGameOver() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.font = '48px Arial';
+    ctx.fillStyle = 'red';
+    ctx.textAlign = 'center';
+    ctx.fillText('ИГРА ОКОНЧЕНА', canvas.width/2, canvas.height/2 - 50);
+    
+    ctx.font = '24px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText('Обновите страницу для новой игры', canvas.width/2, canvas.height/2 + 20);
+}
+
 function shootBullet(targetX, targetY) {
-    const startX = x;
-    const startY = y;
+    const startX = x + tank.width / 2;
+    const startY = y + tank.height / 2;
     const angle = Math.atan2(targetY - startY, targetX - startX);
     bullets.push({
         x: startX,
@@ -76,52 +123,76 @@ function shootBullet(targetX, targetY) {
 }
 
 function updateBullets() {
-    bullets.forEach((bullet, index) => {
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        const bullet = bullets[i];
         bullet.x += bullet.dx;
         bullet.y += bullet.dy;
+        
         if (bullet.x + bullet.width < 0 || bullet.x > canvas.width ||
             bullet.y + bullet.height < 0 || bullet.y > canvas.height) {
-            bullets.splice(index, 1);
+            bullets.splice(i, 1);
         }
-    });
+    }
 }
 
 function drawTank() {
-    ctx.drawImage(tankImage, x+=mx, y+=my, tank.width, tank.height);
+    // Обновляем координаты
+    x += mx;
+    y += my;
+    
+    // Ограничиваем движение
+    x = Math.max(0, Math.min(canvas.width - tank.width, x));
+    y = Math.max(0, Math.min(canvas.height - tank.height, y));
+    
+    // Обновляем координаты в объекте tank
+    tank.x = x;
+    tank.y = y;
+    
+    // Рисуем
+    ctx.drawImage(tankImage, x, y, tank.width, tank.height);
+    ctx.font = '16px Arial';
+    ctx.fillStyle = 'green';
+    ctx.fillText(`Жизни: ${tank.lives}`, x, y - 10);
 }
 
 function drawBullets() {
     bullets.forEach(bullet => {
-        ctx.drawImage(bulletImage, bullet.x, bullet.y, bullet.width, bullet.height);
+        ctx.drawImage(bulletImage, bullet.x - bullet.width/2, bullet.y - bullet.height/2, bullet.width, bullet.height);
     });
 }
 
 function drawEnemyTank() {
-    if (enemyTank.alive || enemyTank2.alive) {
+    if (enemyTank.alive) {
         ctx.drawImage(enemyTankImage, enemyTank.x, enemyTank.y, enemyTank.width, enemyTank.height);
-        ctx.drawImage(enemyTankImage2 , enemyTank2.x, enemyTank2.y, enemyTank2.width, enemyTank2.height);
+    }
+    if (enemyTank2.alive) {
+        ctx.drawImage(enemyTankImage2, enemyTank2.x, enemyTank2.y, enemyTank2.width, enemyTank2.height);
     }
 }
+
 function drawEnemyLives() {
-    ctx.font = '20px Arial';
+    ctx.font = '16px Arial';
     ctx.fillStyle = 'red';
-    ctx.fillText(`Lives: ${enemyTank.lives}`, enemyTank.x, enemyTank.y - 10);
-    ctx.fillText(`lives: ${enemyTank2.lives}`, enemyTank2.x, enemyTank2.y - 10);
+    ctx.textAlign = 'center';
+    
+    if (enemyTank.alive) {
+        ctx.fillText(`Lives: ${enemyTank.lives}`, enemyTank.x + enemyTank.width/2, enemyTank.y - 10);
+    }
+    if (enemyTank2.alive) {
+        ctx.fillText(`Lives: ${enemyTank2.lives}`, enemyTank2.x + enemyTank2.width/2, enemyTank2.y - 10);
+    }
 }
 
 function checkBulletCollision() {
-    bullets.forEach((bullet, bulletIndex) => {
-        if (enemyTank.alive && bullet.x < enemyTank.x + enemyTank.width &&
-            bullet.x + bullet.width > enemyTank.x &&
-            bullet.y < enemyTank.y + enemyTank.height &&
-            bullet.y + bullet.height > enemyTank.y) {
-            // Пуля попала во вражеский танк
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        const bullet = bullets[i];
+        
+        if (enemyTank.alive && checkCollisionBetween(bullet, enemyTank)) {
             enemyTank.lives -= 1;
-            bullets.splice(bulletIndex, 1);
+            bullets.splice(i, 1);
 
             if (enemyTank.lives <= 0) {
                 enemyTank.alive = false;
-                // Создание крови
                 blood = {
                     x: enemyTank.x + enemyTank.width / 2 - 25,
                     y: enemyTank.y + enemyTank.height / 2 - 25,
@@ -129,20 +200,15 @@ function checkBulletCollision() {
                     duration: 50
                 };
             }
+            continue;
         }
-    });
-    bullets.forEach((bullet, bulletIndex) => {
-        if (enemyTank2.alive && bullet.x < enemyTank2.x + enemyTank2.width &&
-            bullet.x + bullet.width > enemyTank2.x &&
-            bullet.y < enemyTank2.y + enemyTank2.height &&
-            bullet.y + bullet.height > enemyTank2.y) {
-            // Пуля попала во вражеский танк
+        
+        if (enemyTank2.alive && checkCollisionBetween(bullet, enemyTank2)) {
             enemyTank2.lives -= 1;
-            bullets.splice(bulletIndex, 1);
+            bullets.splice(i, 1);
 
             if (enemyTank2.lives <= 0) {
                 enemyTank2.alive = false;
-                // Создание взрыва
                 explosion = {
                     x: enemyTank2.x + enemyTank2.width / 2 - 25,
                     y: enemyTank2.y + enemyTank2.height / 2 - 25,
@@ -151,123 +217,114 @@ function checkBulletCollision() {
                 };
             }
         }
-    });
+    }
 }
 
 function drawBlood() {
     if (blood) {
         ctx.drawImage(bloodImage, blood.x, blood.y, blood.size, blood.size);
         blood.duration -= 1;
-
-        if (blood.duration <= 0) {
-            blood = null;
-        }
+        if (blood.duration <= 0) blood = null;
     }
 }
 
-function drawEXP(){
-    if (explosion){
-        ctx.drawImage(explosionImage, explosion.x, explosion.y,);
-        explosion.duration -=1;
-
-        if (explosion.duration <= 0) {
-            explosion = null;
-        }
+function drawEXP() {
+    if (explosion) {
+        ctx.drawImage(explosionImage, explosion.x, explosion.y, explosion.size, explosion.size);
+        explosion.duration -= 1;
+        if (explosion.duration <= 0) explosion = null;
     }
 }
 
 function keyDownHandler(event) {
-        const keyName = event.key;
-if (keyName == "w" || keyName == "W" || keyName == 'ц' || keyName == 'Ц'){
-    my = -speed;
+    if (gameOver) return;
+    const keyName = event.key;
+    if (keyName == "w" || keyName == "W" || keyName == 'ц' || keyName == 'Ц') my = -speed;
+    if (keyName == "s" || keyName == "S" || keyName == 'ы' || keyName == 'Ы') my = speed;
+    if (keyName == "a" || keyName == "A" || keyName == 'ф' || keyName == 'Ф') mx = -speed;
+    if (keyName == "d" || keyName == "D" || keyName == 'в' || keyName == 'В') mx = speed;
 }
-if (keyName == "s" || keyName == "S" || keyName == 'ы' || keyName == 'Ы'){
-    my = speed;
-}
-if (keyName == "a" || keyName == "A" || keyName == 'ф' || keyName == 'Ф'){
-    mx = -speed;
-}
-if (keyName == "d" || keyName == "D" || keyName == 'в' || keyName == 'В'){
-    mx = speed;
-}
-}
+
 function keyUpHandler(event) {
     const keyName = event.key;
+    if (keyName === "a" || keyName === "A" || keyName === 'ф' || keyName === 'Ф') mx = 0;
+    else if (keyName === "d" || keyName === "D" || keyName === 'в' || keyName === 'В') mx = 0;
+    else if (keyName === "w" || keyName === "W" || keyName === 'ц' || keyName === 'Ц') my = 0;
+    else if (keyName === "s" || keyName === "S" || keyName === 'ы' || keyName === 'Ы') my = 0;
+}
+
+// УДАЛИТЕ всё отсюда до конца:
+// function checkCollision() {
+//     if (x < enemyTank.x + enemyTank.width && x + 50 > enemyTank.x && y < enemyTank.y + enemyTank.height && y + 50 > enemyTank.y || x < enemyTank2.x + enemyTank2.width && x + 50 > enemyTank2.x && y < enemyTank2.y + enemyTank2.height && y + 50 > enemyTank2.y) { + enemyHeight && y + 50 > enemyY;} {
+//         stopGame();
+//     }
+// }
+// function stopGame() { ... }
+// function animate() { ... }
+
+function checkPlayerCollision() {
+    if (enemyTank.alive && checkCollisionBetween(tank, enemyTank)) {
+        tank.lives -= 1;
+        // Отталкивание
+        x -= mx * 2;
+        y -= my * 2;
+        if (tank.lives <= 0) {
+            gameOver = true;
+            showGameOver();
+        }
+    }
     
-    if (keyName === "a" || keyName === "A" || keyName === 'ф' || keyName === 'Ф') {
-        mx = 0;
-    } else if (keyName === "d" || keyName === "D" || keyName === 'в' || keyName === 'В') { // Правое движение
-        mx = 0;
-    } else if (keyName === "w" || keyName === "W" || keyName === 'ц' || keyName === 'Ц') { 
-        my = 0;
-    } else if (keyName === "s" || keyName === "S" || keyName === 'ы' || keyName === 'Ы') {
-        my = 0;
+    if (enemyTank2.alive && checkCollisionBetween(tank, enemyTank2)) {
+        tank.lives -= 1;
+        // Отталкивание
+        x -= mx * 2;
+        y -= my * 2;
+        if (tank.lives <= 0) {
+            gameOver = true;
+            showGameOver();
+        }
     }
 }
-function checkCollision() {
-     if (x < enemyTank.x + enemyTank.width && x + 50 > enemyTank.x && y < enemyTank.y + enemyTank.height && y + 50 > enemyTank.y || x < enemyTank2.x + enemyTank2.width && x + 50 > enemyTank2.x && y < enemyTank2.y + enemyTank2.height && y + 50 > enemyTank2.y) { + enemyHeight && y + 50 > enemyY;} {
-        stopGame();
-    }
-}
-
-// Остановка игры при столкновении
-function stopGame() {
-    dx = 0;
-    dy = 0;
-    enemyDx = 0;
-}
-
-// Запуск анимации
-function animate() {
-    requestAnimationFrame(animate);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawSquare();
-    drawEnemy();
-    checkCollision();
-
-    x += dx;
-    y += dy;
-
-    // Обновление позиции врага
-    enemyX += enemyDx;
-    if ((enemyTank + enemyTank.width > canvas.width || enemyTank.x < 0) ||(enemyTank2 + enemyTank2.width > canvas.width || enemyTank2.X < 0)) { {
-        enemyTank.Dx = -enemyTank.Dx;
-        enemyTank2.Dx = -enemyTank2.Dx;
-    }
-}
-}
-
 
 document.addEventListener('keydown', keyDownHandler);
 document.addEventListener('keyup', keyUpHandler);
+
 function update() {
+    if (gameOver) return;
+    
     updateBullets();
     checkBulletCollision();
+    checkPlayerCollision();
+    
     enemyTank.x += enemyTank.moveSpeed * enemyTank.direction;
     if ((enemyTank.x >= canvas.width - enemyTank.width && enemyTank.direction === 1) ||
         (enemyTank.x <= 0 && enemyTank.direction === -1)) {
         enemyTank.direction *= -1; 
     }
+    
     enemyTank2.x += enemyTank2.moveSpeed * enemyTank2.direction;
     if ((enemyTank2.x >= canvas.width - enemyTank2.width && enemyTank2.direction === 1) ||
         (enemyTank2.x <= 0 && enemyTank2.direction === -1)) {
         enemyTank2.direction *= -1; 
     }
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawTank();
     drawBullets();
     drawEnemyTank();
-    if (enemyTank.alive) {
-        drawEnemyLives();
-    }
+    drawEnemyLives();
     drawBlood();
     drawEXP();
+    
     requestAnimationFrame(update);
-    animate();
 }
 
-
-// Запуск игры после загрузки всех изображений
 window.onload = () => {
-    update();
+    const checkImagesLoaded = setInterval(() => {
+        if (imagesLoaded === images.length) {
+            console.log('Все изображения загружены!');
+            clearInterval(checkImagesLoaded);
+            update();
+        }
+    }, 100);
 };
