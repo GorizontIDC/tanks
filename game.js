@@ -11,7 +11,7 @@ const tankImage = new Image();
 tankImage.src = 'photo/IS.png';
 
 const bulletImage = new Image();
-bulletImage.src = 'photo/bullet.png';
+bulletImage.src = 'photo/bulett.png';
 
 const bloodImage = new Image();
 bloodImage.src = 'photo/blood.gif';
