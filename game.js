@@ -205,11 +205,11 @@ function keyUpHandler(event) {
     }
 }
 function checkCollision() {
-     if (x < enemyTank.x + enemyTank.width && x + 50 > enemyTank.x && y < enemyTank.y + enemyTank.height && y + 50 > enemyTank.y || x < enemyTank2.x + enemyTank2.width && x + 50 > enemyTank2.x && y < enemyTank2.y + enemyTank2.height && y + 50 > enemyTank2.y) { + enemyHeight && y + 50 > enemyY) {
+     if (x < enemyTank.x + enemyTank.width && x + 50 > enemyTank.x && y < enemyTank.y + enemyTank.height && y + 50 > enemyTank.y || x < enemyTank2.x + enemyTank2.width && x + 50 > enemyTank2.x && y < enemyTank2.y + enemyTank2.height && y + 50 > enemyTank2.y) { + enemyHeight && y + 50 > enemyY;} {
         stopGame();
     }
 }
-}
+
 // Остановка игры при столкновении
 function stopGame() {
     dx = 0;
